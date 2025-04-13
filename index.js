@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 app.get("/", (req, res) => {
-  res.send("Hello World");
+  res.send("Hello World - We are on AWS APP Runner");
 });
 
 app.get("/api/endpoint", (req, res) => {
