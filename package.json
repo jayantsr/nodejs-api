@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/jayantsr/nodejs-api/issues"
   },
-  "homepage": "https://github.com/jayantsr/nodejs-api#readme"
+  "homepage": "https://github.com/jayantsr/nodejs-api#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
 }
