@@ -3,11 +3,11 @@ name: Deploy to AWS App Runner
 on:
   push:
     branches:
-      - main # or any branch you prefer
+      - main # or whichever branch you deploy from
 
 jobs:
   deploy:
-    name: Build & Deploy to AWS App Runner
+    name: Build & Push to ECR (App Runner auto-deploy)
     runs-on: ubuntu-latest
 
     steps:
@@ -22,23 +22,14 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
-        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag, and push Docker image to ECR
         env:
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-          IMAGE_TAG: ${{ github.sha }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }} # e.g. 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-app
         run: |
-          docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REPOSITORY:$IMAGE_TAG
+          docker build -t $ECR_REPOSITORY:latest .
+          docker push $ECR_REPOSITORY:latest
 
-      - name: Deploy to AWS App Runner
-        env:
-          SERVICE_ARN: ${{ secrets.APP_RUNNER_ARN }}
-          ECR_IMAGE: ${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}
-        run: |
-          aws apprunner update-service \
-            --service-arn $SERVICE_ARN \
-            --source-configuration ImageRepository={ImageIdentifier=$ECR_IMAGE,ImageRepositoryType=ECR} \
-            --auto-deployments-enabled
+      - name: Echo
+        run: echo "✅ Pushed image to ECR. App Runner will auto-deploy from ECR:latest"
